@@ -1,0 +1,155 @@
+﻿
+<script src="~/customjs/common.js"></script>
+<script src="~/customjs/treasury/interestcalculationapproval.js"></script>
+<div ng-app="App" ng-controller="Ctl">
+
+
+
+    <div ng-show="loading">
+        <img style="width:70%;height:100%;position:absolute;z-index:1;" src="~/assets/images/Untitled.svg">
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Interest Calculation Approval</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <label>Select Status</label>
+                            <select class="statusid form-select" ng-model="statusid" ng-init="StatusList()" ng-change="GetData()"
+                                    id="statusid">
+                                <option value="">--Select--</option>
+                                <option ng-repeat="list in statuslist" value="{{list.code}}">
+                                    {{list.name}}
+                                </option>
+                            </select>
+                        </div>
+                      
+                        <div class="col-sm-6">
+                            <label>Search</label>
+                            <input type="text" ng-model="search" class="form-control" placeholder="Search.." />
+                        </div>
+                    </div><br />
+                    <div class="row table-responsive">
+
+                        <div class="col-sm-12">
+                            <div class="row table-responsive">
+                                <div ng-if="loading" class="spinner-wrapper">
+                                </div>
+                                <div class="col-sm-12">
+                                    <table id="tblinfo" class="table table-responsive" ng-if="!loading">
+                                        <tr>
+                                            <th style="display:none;">ID</th>
+                                            <th>Sl No</th>
+                                            <th ng-click='sortBy("lenderunit")'>
+                                                Lender Unit
+                                                <span ng-show="sortColumn=='lenderunit'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                            </th>
+                                            <th ng-click='sortBy("borrowerunit")'>
+                                                Borrower Unit
+                                                <span ng-show="sortColumn=='borrowerunit'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                            </th>
+                                            <th ng-click='sortBy("amount")' style="color:rgb(252, 176, 64);display:none">
+                                                Amount
+                                                <span ng-show="sortColumn=='amount'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                            </th>
+                                            <th ng-click='sortBy("vamount")' style="color:rgb(252, 176, 64)">
+                                                Amount
+                                                <span ng-show="sortColumn=='amount'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                            </th>
+                                            <th ng-click='sortBy("startdate")'>
+                                                Start Date
+                                                <span ng-show="sortColumn=='startdate'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                            </th>
+                                            <th ng-click='sortBy("enddate")'>
+                                                End Date
+                                                <span ng-show="sortColumn=='enddate'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                            </th>
+
+                                            <th ng-click='sortBy("noofdays")'>
+                                                No Of Days
+                                                <span ng-show="sortColumn=='noofdays'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                            </th>
+
+                                            <th ng-click='sortBy("interestrate")'>
+                                                Interest Rate
+                                                <span ng-show="sortColumn=='interestrate'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                            </th>
+
+                                            <th ng-click='sortBy("interestamt")' style="color:rgb(252, 176, 64);display:none">
+                                                Interest Amt
+                                                <span ng-show="sortColumn=='interestamt'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                            </th>
+                                            <th ng-click='sortBy("vinterestamt")' style="color:rgb(252, 176, 64)">
+                                                Interest Amt
+                                                <span ng-show="sortColumn=='interestamt'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                            </th>
+
+                                            <th ng-click='sortBy("details")'>
+                                                Details
+                                                <span ng-show="sortColumn=='details'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                            </th>
+                                            <th>Remark</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                        <tr dir-paginate="list in list | orderBy: sortColumn : reverse | filter:search | itemsPerPage:8">
+
+                                            <td style="display:none;">{{list.id}}</td>
+                                            <td>{{$index+1}}</td>
+                                            <td>{{list.lenderunit}}</td>
+                                            <td>{{list.borrowerunit}}</td>
+                                            <td style="background-color:rgb(240, 243, 255);display:none">{{list.amount}}</td>
+                                            <td style="background-color:rgb(240, 243, 255);font-weight:bold">{{list.vamount}}</td>
+                                            <td>{{list.startdate}}</td>
+                                            <td>{{list.enddate}}</td>
+                                            <td>{{list.noofdays}}</td>
+                                            <td>{{list.interestrate}}</td>
+                                            <td style="background-color:rgb(240, 243, 255);display:none">{{list.interestamt}}</td>
+                                            <td style="background-color:rgb(240, 243, 255);font-weight:bold">{{list.vinterestamt}}</td>
+                                            <td>{{list.details}}</td>
+                                            <td><input type="text" id="{{'description'+$index}}" value="{{list.descriptions}}" class="form-control" /></td>
+                                            <td>
+                                                <span class="badge rounded-pill badge-soft-warning font-size-11" ng-if='list.docstatuscode=="PEND"'>{{list.status}}</span>
+                                                <span class="badge rounded-pill badge-soft-success font-size-11" ng-if='list.docstatuscode=="COMP"'>{{list.status}}</span>
+                                                <span class="badge rounded-pill badge-soft-success font-size-11" ng-if='list.docstatuscode=="APPR"'>{{list.status}}</span>
+                                                <span class="badge rounded-pill badge-soft-danger font-size-11" ng-if='list.docstatuscode=="REJC"'>{{list.status}}</span>
+                                            </td>
+                                            <td>
+                                                @* <button type="button" class="btn btn-info btn-sm edit" data-bs-toggle="modal" data-bs-target="#ViewModalFullscreen" ng-click="ViewMaster(list.id)"><span class="fas fa-search-plus"></span> Print</button> *@
+                                                @* <button type="button" ng-disabled="list.docstatuscode=='PEND'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" class="btn btn-warning btn-sm edit" data-bs-toggle="modal" data-bs-target="#EexampleModal" ng-click="Edit(list.id)"><span class="bx bx-edit-alt"></span></button> *@
+                                                <button ng-disabled="list.docstatuscode=='COMP' || list.docstatuscode=='APPR' || list.docstatuscode=='REJC'" type="button" data-bs-toggle="modal" data-bs-target="#EditexampleModalFullscreen" class="btn btn-primary" ng-click="Approved(list.hid)"><span class="fas fa-check"></span></button>
+                                                <button type="button" ng-disabled="list.docstatuscode=='COMP' || list.docstatuscode=='APPR' || list.docstatuscode=='REJC'" class="btn btn-danger btn-sm delete" ng-click="Rejected(list.hid)"><span class="bx bxs-trash-alt"></span></button>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                </div>
+                                <div class="col-sm-6">
+                                    <dir-pagination-controls max-size="10" style="font-size:16px;"
+                                                             direction-links="true"
+                                                             boundary-links="true">
+                                    </dir-pagination-controls>
+
+                                </div>
+                                <div class="col-sm-2">
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+

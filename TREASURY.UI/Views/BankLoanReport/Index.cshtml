@@ -1,0 +1,57 @@
+﻿<script src="~/customjs/Report/BankLoanReport.js"></script>
+<br />
+<br />
+<br />
+
+<div class="row" ng-app="App" ng-controller="Ctl" ng-init="GetUnit()">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">Bank Loan</h4>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="row">
+
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label>Lender Unit :</label>
+                                <select class="form-select" ng-model="lenderunitid"
+                                        id="lenderunitid">
+                                    <option value="">--Select--</option>
+                                    <option ng-repeat="list in unitlist" value="{{list.id}}">
+                                        {{list.name}}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="formrow-password-input" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="startdate" ng-model="startdate">
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="formrow-password-input" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="enddate" ng-model="enddate">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <button style="margin-top:28px;" type="submit" class="btn btn-primary w-md" ng-click="showReport()">Submit</button>
+                            </div>
+                        </div>
+
+                            @* <h1 style="text-align:center;">Bank Loan Report</h1> *@
+                            <iframe ng-src="{{iframeUrl}}" width="100%" height="600px" class="border rounded"></iframe>
+                            @* <iframe class="embed-responsive-item" src="http://10.35.117.135/reports/report/IMPORT/LCMREPORT" allowfullscreen></iframe> *@
+                    </div>
+                </form>
+            </div>
+            <!-- end card body -->
+        </div>
+        <!-- end card -->
+    </div>
+</div>

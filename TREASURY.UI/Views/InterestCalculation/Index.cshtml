@@ -1,0 +1,622 @@
+﻿<script src="~/customjs/treasury/interestcalculation.js"></script>
+<script src="~/customjs/common.js"></script>
+
+<div ng-app="App" ng-controller="Ctl" ng-init="GetData()">
+
+    <div ng-show="loading">
+        <img style="width:70%;height:100%;position:absolute;z-index:1;" src="~/assets/images/Untitled.svg">
+    </div>
+
+    <div class="row" ng-init="GetUnit()">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Interest Rate Landing</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <button style="margin-top:32px" type="button" class="btn btn-primary btn-sm insert" ng-click="Clear()" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="mdi mdi-plus me-1"></i> Create New</button>
+                        </div>
+                        <div class="col-sm-3">
+                            <label>Lender Unit</label>
+                            <select class="form-select" ng-model="rlenderunitid" ng-change="LoadData()"
+                                    id="rlenderunitid">
+                                <option value="">--Select--</option>
+                                <option ng-repeat="list in unitlist" value="{{list.id}}">
+                                    {{list.name}}
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <label>Borrower Unit</label>
+                            <select class="form-select" ng-model="rborrowerunitid" ng-change="LoadData()"
+                                    id="rborrowerunitid">
+                                <option value="">--Select--</option>
+                                <option ng-repeat="list in unitlist" value="{{list.id}}">
+                                    {{list.name}}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3">
+                            <label>Search</label>
+                            <input type="text" ng-model="search" class="form-control" placeholder="Search.." />
+                        </div>
+                    </div><br />
+                    <div class="row table-responsive">
+                        <div ng-if="loading" class="spinner-wrapper">
+
+                        </div>
+                        <div class="col-sm-12">
+                            <table id="tblinfo" class="table table-responsive" ng-if="!loading">
+                                <tr>
+                                    <th style="display:none;">ID</th>
+                                    <th>Sl No</th>
+                                    <th ng-click='sortBy("lenderunit")'>
+                                        Lender Unit
+                                        <span ng-show="sortColumn=='lenderunit'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                    </th>
+                                    <th ng-click='sortBy("borrowerunit")'>
+                                        Borrower Unit
+                                        <span ng-show="sortColumn=='borrowerunit'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                    </th>
+                                    <th ng-click='sortBy("amount")' style="color:rgb(252, 176, 64);display:none">
+                                       Amount
+                                        <span ng-show="sortColumn=='amount'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                    </th>
+                                    <th ng-click='sortBy("amount")' style="color:rgb(252, 176, 64)">
+                                        Amount
+                                        <span ng-show="sortColumn=='vamount'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                    </th>
+                                    <th ng-click='sortBy("startdate")'>
+                                        Start Date
+                                        <span ng-show="sortColumn=='startdate'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                    </th>
+                                    <th ng-click='sortBy("enddate")'>
+                                        End Date
+                                        <span ng-show="sortColumn=='enddate'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                    </th>
+
+                                    <th ng-click='sortBy("noofdays")'>
+                                        No Of Days
+                                        <span ng-show="sortColumn=='noofdays'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                    </th>
+
+                                    <th ng-click='sortBy("interestrate")'>
+                                        Interest Rate
+                                        <span ng-show="sortColumn=='interestrate'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                    </th>
+
+                                    <th ng-click='sortBy("interestamt")' style="color:rgb(252, 176, 64);display:none">
+                                        Interest Amt
+                                        <span ng-show="sortColumn=='interestamt'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                    </th>
+                                    <th ng-click='sortBy("vinterestamt")' style="color:rgb(252, 176, 64)">
+                                        Interest Amt
+                                        <span ng-show="sortColumn=='interestamt'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                    </th>
+
+                                    <th ng-click='sortBy("details")'>
+                                        Details
+                                        <span ng-show="sortColumn=='details'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                    </th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                                <tr dir-paginate="list in list | orderBy: sortColumn : reverse | filter:search | itemsPerPage:8">
+
+                                    <td style="display:none;">{{list.id}}</td>
+                                    <td>{{$index+1}}</td>
+                                    <td>{{list.lenderunit}}</td>
+                                    <td>{{list.borrowerunit}}</td>
+                                    <td style="background-color:rgb(240, 243, 255);display:none">{{list.amount}}</td>
+                                    <td style="background-color:rgb(240, 243, 255);font-weight:bold">{{list.vamount}}</td>
+                                    <td>{{list.startdate}}</td>
+                                    <td>{{list.enddate}}</td>
+                                    <td>{{list.noofdays}}</td>
+                                    <td>{{list.interestrate}}</td>
+                                    <td style="background-color:rgb(240, 243, 255);display:none">{{list.interestamt}}</td>
+                                    <td style="background-color:rgb(240, 243, 255);font-weight:bold">{{list.vinterestamt}}</td>
+                                    <td>{{list.details}}</td>
+                                    <td>
+                                        <span class="badge rounded-pill badge-soft-warning font-size-11" ng-if='list.docstatuscode=="PEND"'>{{list.status}}</span>
+                                        <span class="badge rounded-pill badge-soft-success font-size-11" ng-if='list.docstatuscode=="COMP"'>{{list.status}}</span>
+                                        <span class="badge rounded-pill badge-soft-success font-size-11" ng-if='list.docstatuscode=="APPR"'>{{list.status}}</span>
+                                        <span class="badge rounded-pill badge-soft-danger font-size-11" ng-if='list.docstatuscode=="REJC"'>{{list.status}}</span>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-info btn-sm edit" data-bs-toggle="modal" data-bs-target="#ViewModalFullscreen" ng-click="ViewMaster(list.id)"><span class="fas fa-search-plus"></span> Print</button>
+                                        <button type="button" ng-disabled="list.docstatuscode=='COMP' || list.docstatuscode=='APPR' || list.docstatuscode=='REJC'" data-bs-toggle="modal" class="btn btn-warning btn-sm edit" data-bs-target="#EexampleModal" ng-click="Edit(list.id)"><span class="bx bx-edit-alt"></span></button>
+                                        <button type="button" ng-disabled="list.docstatuscode=='COMP' || list.docstatuscode=='APPR' || list.docstatuscode=='REJC'" class="btn btn-danger btn-sm delete" ng-click="DeleteMaster(list.id)"><span class="bx bxs-trash-alt"></span></button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                        </div>
+                        <div class="col-sm-6">
+                            <dir-pagination-controls max-size="10" style="font-size:16px;"
+                                                     direction-links="true"
+                                                     boundary-links="true">
+                            </dir-pagination-controls>
+
+                        </div>
+                        <div class="col-sm-2">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="ViewModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="ViewModalFullscreen" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Sales Quotation Landing (View Mode)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="card">
+
+                                    <div class="card-header">
+                                        <h6>Sales Quotation</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <table id="tblview" ng-repeat="list in master" class="table table-bordered" style="font-weight:bold">
+                                            <tr>
+                                                <td style="text-align:right"> Indent Number :</td>
+                                                <td style="text-align:left">{{list.indentid}}</td>
+                                                <td style="text-align:right">SQ Number :</td>
+                                                <td style="text-align:left">{{list.sqno}}</td>
+                                                <td style="text-align:right">SQ Date :</td>
+                                                <td style="text-align:left">{{list.sqdate}}</td>
+                                                <td style="text-align:right">SQ Expire Date :</td>
+                                                <td style="text-align:left">{{list.sqexpiredate}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:right">RFP No :</td>
+                                                <td style="text-align:left">{{list.rfpno}}</td>
+                                                <td style="text-align:right">Country of Origin :</td>
+                                                <td style="text-align:left">{{list.countryoforigin}}</td>
+                                                <td style="text-align:right">Supplier Name</td>
+                                                <td style="text-align:left">{{list.strSupplierName}}</td>
+                                                <td style="text-align:right">Currency</td>
+                                                <td style="text-align:left">{{list.currency}}</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style="text-align:right">Tolerance :</td>
+                                                <td style="text-align:left">{{list.tolerance}}</td>
+                                                <td style="text-align:right"></td>
+                                                <td style="text-align:left"></td>
+                                                <td style="text-align:right"></td>
+                                                <td style="text-align:left"></td>
+                                                <td style="text-align:right"></td>
+                                                <td style="text-align:left"></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h4>List of Item's</h4>
+                                <table id="tblinfo" class="table table-responsive">
+                                    <tr>
+                                        <th style="display:none;">ID</th>
+                                        <th>Sl No</th>
+                                        <th ng-click='sortBy("itemid")'>
+                                            Item ID
+                                            <span ng-show="sortColumn=='itemid'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("itemname")'>
+                                            Item Description
+                                            <span ng-show="sortColumn=='itemname'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+
+                                        <th ng-click='sortBy("strUoM")'>
+                                            Unit of Measure
+                                            <span ng-show="sortColumn=='strUoM'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("hscode")'>
+                                            HS Code
+                                            <span ng-show="sortColumn=='hscode'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("quantity")'>
+                                            Indent Quantity
+                                            <span ng-show="sortColumn=='quantity'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("quantity")'>
+                                            Unit Price
+                                            <span ng-show="sortColumn=='quantity'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        @* <th ng-click='sortBy("totalweight")'>
+                                            Total Weight
+                                            <span ng-show="sortColumn=='totalweight'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>*@
+                                        <th ng-click='sortBy("quantity")'>
+                                            Total Price
+                                            <span ng-show="sortColumn=='quantity'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                    </tr>
+
+                                    <tr ng-repeat="list in details">
+                                        <td style="display:none;">{{list.id}}</td>
+                                        <td>{{$index+1}}</td>
+                                        <td>{{list.itemid}}</td>
+                                        <td>{{list.strItemName}}</td>
+                                        <td>{{list.strUoM}}</td>
+                                        <td>{{list.hscode}}</td>
+                                        <td>{{list.quantity}}</td>
+                                        <td>{{list.unitprice}}</td>
+                                        @*<td>{{list.totalweight}}</td>*@
+                                        <td>{{list.totalprice}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+
+                                        <td class="text-right"><strong>Total:</strong></td>
+                                        <td><strong>{{calculateTotalPrice()}}</strong></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        </<br />
+                        <div class="row table-responsive">
+                            <div class="col-sm-12">
+                                <h4>Document Status Level</h4>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th>Sl No.</th>
+                                        <th>Codeno</th>
+                                        <th>Inititator</th>
+                                        <th>Approver</th>
+                                        <th>Action Date</th>
+                                        <th>Status</th>
+                                        <th>Remarks</th>
+                                    </tr>
+
+                                    <tr ng-repeat="vlist in docstatusview">
+                                        <td>
+                                            {{$index+1}}
+                                        </td>
+                                        <td>
+                                            {{vlist.processcode}}
+                                        </td>
+                                        <td>
+                                            {{vlist.vinitiator}}
+                                        </td>
+
+                                        <td>
+                                            {{vlist.approvar}}
+                                        </td>
+
+                                        <td>
+                                            {{vlist.documentcreateddate}}
+                                        </td>
+                                        <td>
+                                            {{vlist.docstatus}}
+                                        </td>
+                                        <td>
+                                            {{vlist.descriptions}}
+                                        </td>
+
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h5>Attachment</h5>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th>Sl No</th>
+                                        <th>File Name</th>
+                                        @*<th>File Type</th>*@
+                                        <th>Action</th>
+                                    </tr>
+                                    <tbody id="tblData"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-warning sm" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                         <div class="modal-header" style="background-color:rgb(249, 250, 250);">
+                                            <h5 class="card-title" id="exampleModalLabel">Interest Calculation (Creation)</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                    <div class="modal-body">
+                                        <form class="needs-validation">
+                                            
+                                                            <div class="row">
+                                                                <div class="col-sm-6">
+                                                                    <label>Lender Unit :</label>
+                                                                    <select class="form-select" ng-model="lenderunitid" 
+                                                                            id="lenderunitid">
+                                                                        <option value="">--Select--</option>
+                                                                        <option ng-repeat="list in unitlist" value="{{list.id}}">
+                                                                            {{list.name}}
+                                                                        </option>
+                                                                    </select>
+                                                                    <span class="error">Select Lender Unit</span>
+                                                                </div>
+
+                                                                <div class="col-sm-6">
+                                                                    <label>Borrower Unit :</label>
+                                                                    <select class="form-select" ng-model="borrowerunitid" 
+                                                                            id="borrowerunitid">
+                                                                        <option value="">--Select--</option>
+                                                                        <option ng-repeat="list in unitlist" value="{{list.id}}">
+                                                                            {{list.name}}
+                                                                        </option>
+                                                                    </select>
+                                                                    <span class="error">Select Borrower Unit</span>
+                                                                </div>
+                                                            </div>
+
+                                                             <div class="row">
+                                                                <div class="col-sm-4">
+                                                                    <label>Start Date :</label>
+                                                                    <input type="date" class="form-control" placeholder="Start Date..." id="txtStartDate" />
+                                                                    <span class="error">Start Date Required.</span>
+                                                                </div>
+
+                                                                <div class="col-sm-4">
+                                                                    <label>End Date :</label>
+                                                                    <input type="date" class="form-control" id="txtEndDate" />
+                                                                    <span class="error">End Date Required.</span>
+                                                                </div>
+
+                                                                <div class="col-sm-4">
+                                                                    <label>No of Days :</label>
+                                                                    <input type="text" class="form-control" id="txtNoofDays" value="0" disabled />
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="row">
+                                                                <div class="col-sm-4">
+                                                                    <label>Amount :</label>
+                                                                    <input type="text" class="form-control" onkeyup="CalculateLine()" placeholder="Enter Amount..." id="txtAmt" onkeypress="return isNumber(event)" />
+                                                                    <span class="error">Amount Required.</span>
+                                                                </div>
+                                                                <div class="col-sm-4">
+                                                                    <label>Interest Rate(%) :</label>
+                                                                    <input type="text" class="form-control" id="txtInterestRate" onkeypress="return isNumber(event)" onkeyup="CalculateLine()" />
+                                                                    <span class="error">Interest Rate Required.</span>
+                                                                </div>
+                                                                <div class="col-sm-4">
+                                                                    <label>Interest Amt :</label>
+                                                                    <input type="text" class="form-control" id="txtInterestAmt" placeholder="Enter Interest Amt..." disabled />
+
+                                                                    <span class="error">Interest Amount.</span>
+                                                                </div>
+                                                            </div>
+                                                            
+
+                                                            <div class="row">
+                                                                <div class="col-sm-12">
+                                                                    <label>Details :</label>
+                                                                    <textarea class="form-control" id="txtDetails"></textarea>
+                                                                </div>
+
+                                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer" style="background-color:rgb(249, 250, 250)">
+                                        <button type="button" ng-click="Clear()" class="btn btn-warning" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i> Close</button>
+                                        <button ng-click="Save()" type="button" class="btn btn-primary"><i class="fas fa-check"></i> Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                      
+    </div>
+ 
+
+
+<div class="modal fade" id="EexampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background-color:rgb(249, 250, 250);">
+                                    <h5 class="card-title" id="exampleModalLabel">Interest Calculation (Edit)</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form class="needs-validation">
+                                        <div class="row">
+                                            <input type="hidden" id="eid" />
+                                            <div class="col-sm-6">
+                                                <label>Lender Unit</label>
+                                                <select class="form-select" ng-model="elenderunitid" 
+                                                        id="elenderunitid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in unitlist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Select Lender Unit</span>
+                                            </div>
+
+                                            <div class="col-sm-6">
+                                                <label>Borrower Unit :</label>
+                                                <select class="form-select" ng-model="eborrowerunitid" 
+                                                        id="eborrowerunitid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in unitlist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Select Borrower Unit</span>
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <label>Start Date :</label>
+                                                <input type="date" class="form-control" placeholder="Start Date..." id="etxtStartDate"/>
+                                                <span class="error">Start Date Required.</span>
+                                            </div>
+
+                                            <div class="col-sm-4">
+                                                <label>End Date :</label>
+                                                <input type="date" class="form-control" id="etxtEndDate" />
+                                                <span class="error">End Date Required.</span>
+                                            </div>
+
+                                            <div class="col-sm-4">
+                                                <label>No of Days :</label>
+                                                <input type="text" class="form-control" id="etxtNoofDays" value="0" disabled />
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <label>Amount :</label>
+                                                <input type="text" class="form-control" onkeypress="return isNumber(event)" placeholder="Enter Amount..." id="etxtAmt" onkeyup="ECalculateLine()" />
+                                                <span class="error">Amount Required.</span>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <label>Interest Rate(%) :</label>
+                                                <input type="text" class="form-control" id="etxtInterestRate" onkeypress="return isNumber(event)" onkeyup="ECalculateLine()" />
+                                                <span class="error">Interest Rate Required.</span>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <label>Interest Amt :</label>
+                                                <input type="text" class="form-control" id="etxtInterestAmt" disabled />
+
+                                                <span class="error">Interest Amount.</span>
+                                            </div>
+
+                                            
+
+                                        </div>
+                                        <div class="row">
+                                        <div class="col-sm-12">
+                                            <label>Details :</label>
+                                            <textarea class="form-control" id="etxtDetails"></textarea>
+                                        </div>
+
+                                        </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer" style="background-color:rgb(249, 250, 250)">
+                                        <button type="button" ng-click="Clear()" class="btn btn-warning" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i> Close</button>
+                                        <button ng-click="Update()" type="button" class="btn btn-primary"><i class="fas fa-check"></i> Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+ </div>
+
+ </div>
+
+  <script>
+
+    function calculateDateDifference() {
+
+        const startDate = document.getElementById('txtStartDate').value;
+        const endDate = document.getElementById('txtEndDate').value;
+
+        if (startDate && endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+
+            if (end >= start) {
+                const timeDifference = end - start; 
+                const dayDifference = timeDifference / (1000 * 3600 * 24);
+
+                
+                $("#txtNoofDays").val(dayDifference+1);
+                 CalculateLine();
+               
+            } else {
+                notify('error', 'Error Message', 'End date cannot be before start date');
+                
+            }
+        } else {
+            //document.getElementById('result').innerText = 'Please select both start and end dates.';
+        }
+    }
+
+    function ecalculateDateDifference() {
+
+        const startDate = document.getElementById('etxtStartDate').value;
+        const endDate = document.getElementById('etxtEndDate').value;
+
+        if (startDate && endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+
+            if (end >= start) {
+                const timeDifference = end - start;
+                const dayDifference = timeDifference / (1000 * 3600 * 24);
+
+
+                $("#etxtNoofDays").val(dayDifference+1);
+               
+                ECalculateLine();
+
+            } else {
+                notify('error', 'Error Message', 'End date cannot be before start date');
+
+            }
+        } else {
+            //document.getElementById('result').innerText = 'Please select both start and end dates.';
+        }
+    }
+
+
+       function CalculateLine() {
+        if ($("#txtNoofDays").val() === '0') {
+            notify('error', 'Error Message', 'Set no of day different first.');
+        }
+        else {
+            var total = (parseFloat($("#txtAmt").val()) * (parseFloat($("#txtInterestRate").val()) / 100)) / 360 * parseFloat($("#txtNoofDays").val());
+
+            $("#txtInterestAmt").val((isNaN((total)) ? 0 : (total)).toFixed(2));
+        }
+    }
+
+    function ECalculateLine() {
+        if ($("#etxtNoofDays").val() === '0') {
+            notify('error', 'Error Message', 'Set no of day different first.');
+        }
+        else {
+            var total = (parseFloat($("#etxtAmt").val()) * (parseFloat($("#etxtInterestRate").val()) / 100)) / 360 * parseFloat($("#etxtNoofDays").val());
+
+            $("#etxtInterestAmt").val((isNaN((total)) ? 0 : (total)).toFixed(2));
+        }
+        
+    }
+
+    // Add event listeners to calculate the date difference whenever the date changes
+    document.getElementById('txtStartDate').addEventListener('change', calculateDateDifference);
+    document.getElementById('txtEndDate').addEventListener('change', calculateDateDifference);
+
+     document.getElementById('etxtStartDate').addEventListener('change', ecalculateDateDifference);
+    document.getElementById('etxtEndDate').addEventListener('change', ecalculateDateDifference);
+</script>

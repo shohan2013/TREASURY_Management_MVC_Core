@@ -1,0 +1,581 @@
+﻿<script src="~/customjs/loanfacility/loanfacility.js"></script>
+<script src="~/customjs/common.js"></script>
+
+
+<div ng-app="App" ng-controller="Ctl" ng-init="GetData()">
+    <div ng-show="loading">
+        <img style="width:70%;height:100%;position:absolute;z-index:1;" src="~/assets/images/Untitled.svg">
+    </div>
+
+
+<div class="row" ng-init="GetUnit()">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h4>Interest Rate Landing</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <button style="margin-top:32px" type="button" class="btn btn-primary btn-sm insert" ng-click="Clear()" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="mdi mdi-plus me-1"></i> Create New</button>
+                    </div>
+                    <div class="col-sm-4">
+                        <label>Unit</label>
+                        <select class="form-select" ng-model="unitid" ng-change="LoadData()"
+                                id="unitid">
+                            <option value="">--Select--</option>
+                            <option ng-repeat="list in unitlist" value="{{list.id}}">
+                                {{list.name}}
+                            </option>
+                        </select>
+                    </div>
+
+                   
+                    <div class="col-sm-4">
+                        <label>Search</label>
+                        <input type="text" ng-model="search" class="form-control" placeholder="Search.." />
+                    </div>
+                </div><br />
+                <div class="row table-responsive">
+                    <div ng-if="loading" class="spinner-wrapper">
+                    </div>
+                    <div class="col-sm-12">
+                        <table id="tblinfo" class="table table-responsive" ng-if="!loading">
+                            <tr>
+                                <th style="display:none;">ID</th>
+                                <th>Sl No</th>
+                                <th ng-click='sortBy("lenderunit")'>
+                                    Unit
+                                    <span ng-show="sortColumn=='lenderunit'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                </th>
+                                <th ng-click='sortBy("borrowerunit")'>
+                                    Bank Name
+                                    <span ng-show="sortColumn=='borrowerunit'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                </th>
+                                <th ng-click='sortBy("startdate")'>
+                                     SLC/ULC Limit
+                                     [Raw Materials]
+                                    <span ng-show="sortColumn=='startdate'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                </th>
+                                <th ng-click='sortBy("enddate")'>
+                                        LATR/Import
+                                        Loan Limit
+                                    <span ng-show="sortColumn=='enddate'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                </th>
+
+                                <th ng-click='sortBy("interestrate")'>
+                                        SLC/ULC Limit
+                                        [Machinery]
+                                    <span ng-show="sortColumn=='interestrate'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                </th>
+
+                                <th ng-click='sortBy("interestamt")' style="color:rgb(252, 176, 64)">
+                                        Short Term
+                                        Loan
+                                    <span ng-show="sortColumn=='interestamt'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                </th>
+
+                                <th ng-click='sortBy("details")'>
+                                        Overdraft
+                                        Facility
+                                    <span ng-show="sortColumn=='details'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                </th>
+                                    <th>
+                                        Bank
+                                        Guarantee
+                                        Limit
+                                    </th>
+                                    <th>
+                                        Time Loan
+                                        Limit
+                                    </th>
+                                    <th>
+                                        Term Loan
+                                    </th>
+                                    <th>
+                                        [Spares & Machinery]<br />
+                                        One-off Limit
+                                    </th>
+                                    <th>
+                                        SOD Limit
+                                    </th>
+                                    <th>
+                                        Total
+                                    </th>
+                                    <th>
+                                        Sanc. Ref.
+                                    </th>
+                                    <th>
+                                        Expiry Date
+                                    </th>
+                                <th>Action</th>
+                                <th>Document</th>
+                            </tr>
+                            <tr dir-paginate="list in list | orderBy: sortColumn : reverse | filter:search | itemsPerPage:8">
+
+                                <td style="display:none;">{{list.id}}</td>
+                                <td>{{$index+1}}</td>
+                                    <td>{{list.unit}}</td>
+                                    <td>{{list.bankname}}</td>
+                                    <td style="background-color:rgb(240, 243, 255)">{{list.rawmateriallimit}}</td>
+                                    <td>{{list.loanlimit}}</td>
+                                    <td>{{list.machinerylimit}}</td>
+                                    <td>{{list.shorttermloan}}</td>
+                                    <td>{{list.overdraftfacility}}</td>
+                                    <td style="background-color:rgb(240, 243, 255)">{{list.bankguaranteelimit}}</td>
+                                    <td>{{list.timeloanlimit}}</td>
+                                    <td>{{list.termloanlimit}}</td>
+                                    <td style="background-color:rgb(240, 243, 255)">{{list.lcsparesmachinerylimit}}</td>
+                                    
+                                    <td>{{list.sodlimit}}</td>
+                                    <td>{{list.total}}</td>
+                                    <td>{{list.sanctionref}}</td>
+                                    <td>{{list.expiredate}}</td>
+
+                                <td>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ViewModalFullscreen" ng-click="ViewMaster(list.sanctionno)"><span class="fas fa-search-plus"></span></button>
+                                    <button type="button" ng-disabled="list.docstatuscode=='COMP' || list.docstatuscode=='APPR' || list.docstatuscode=='REJC'" data-bs-toggle="modal" class="btn btn-warning btn-sm edit" data-bs-target="#EexampleModal" ng-click="Edit(list.id)"><span class="bx bx-edit-alt"></span></button>
+                                    <button type="button" ng-disabled="list.docstatuscode=='COMP' || list.docstatuscode=='APPR' || list.docstatuscode=='REJC'" class="btn btn-danger btn-sm delete" ng-click="DeleteMaster(list.id)"><span class="bx bxs-trash-alt"></span></button>
+                                </td>
+                                <td>
+                                        <button type="button" data-bs-toggle="modal" class="btn btn-info waves-effect waves-light" data-bs-target="#ViewModalFullscreenAttach" ng-click="ViewMasterAttach(list.sanctionno,list.bankname)"><span class="bx bx-upload"></span></button>
+                                        @* <button type="button" data-bs-toggle="modal" class="btn btn-info waves-effect waves-light" data-bs-target="#DownloadModalFullscreenAttach" ng-click="DownMasterAttach(list.sanctionno,list.bankname)"><span class="bx bx-upload"></span></button> *@
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                    </div>
+                    <div class="col-sm-6">
+                        <dir-pagination-controls max-size="10" style="font-size:16px;"
+                                                 direction-links="true"
+                                                 boundary-links="true">
+                        </dir-pagination-controls>
+
+                    </div>
+                    <div class="col-sm-2">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:rgb(249, 250, 250);">
+                    <h5 class="card-title" id="exampleModalLabel">Limit Facility (Creation) <b>[Amount in Million]</b></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="needs-validation">
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label>Unit Name:</label>
+                                <select class="form-select" ng-model="leadunitid" ng-change="GetBankInfoByUnit()"
+                                        id="leadunitid">
+                                    <option value="">--Select--</option>
+                                    <option ng-repeat="list in unitlist" value="{{list.id}}">
+                                        {{list.name}}
+                                    </option>
+                                </select>
+                                <span class="error">Select Unit</span>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label>Inner Unit :</label>
+                                <select class="form-select" ng-model="innerunitid"
+                                        id="innerunitid">
+                                    <option value="">--Select--</option>
+                                    <option ng-repeat="list in unitlist" value="{{list.id}}">
+                                        {{list.name}}
+                                    </option>
+                                </select>
+                               
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label>Bank Name:</label>
+                                <select class="form-select" ng-model="bankid"
+                                        id="bankid">
+                                    <option value="">--Select--</option>
+                                    <option ng-repeat="list in banklist" value="{{list.id}}">
+                                        {{list.name}}
+                                    </option>
+                                </select>
+                                <span class="error">Select Unit</span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label>
+                                    SLC/ULC Limit<br />
+                                    [Raw Materials] 
+                                </label>
+                                <input type="text" class="form-control" placeholder="Amount..." id="txtRawMaterialLimit" onkeypress="return isNumber(event)"/>
+                                <span class="error">Start Date Required.</span>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <label>
+                                    LATR/Import<br />
+                                    Loan Limit 
+                                </label>
+                                <input type="text" class="form-control" placeholder="Amount..." id="txtLoanLimit" onkeypress="return isNumber(event)" />
+                                <span class="error">End Date Required.</span>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <label>
+                                    SLC/ULC Limit<br />
+                                    [Machinery] 
+                                </label>
+                                <input type="text" class="form-control" placeholder="Amount..." id="txtMachineryLimit" onkeypress="return isNumber(event)" />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label>
+                                    Short Term
+                                    Loan 
+                                </label>
+                                <input type="text" class="form-control" placeholder="Amount..." id="txtShortTermLoan" onkeypress="return isNumber(event)" />
+                                <span class="error">Amount Required.</span>
+                            </div>
+                            <div class="col-sm-4">
+                                <label>
+                                    Overdraft
+                                    Facility 
+                                </label>
+                                <input type="text" class="form-control" placeholder="Amount..." id="txtOverDraftLimit" onkeypress="return isNumber(event)" />
+                                <span class="error">Interest Rate Required.</span>
+                            </div>
+                            <div class="col-sm-4">
+                                <label>
+                                    Bank
+                                    Guarantee
+                                </label>
+                                <input type="text" class="form-control" placeholder="Amount..." id="txtBankGuaranteeLimit" onkeypress="return isNumber(event)" />
+
+                                <span class="error">Interest Amount.</span>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label>
+                                    Time Loan
+                                    Limit 
+                                </label>
+                                <input type="text" class="form-control" placeholder="Amount..." id="txtTimeLoanLimit" onkeypress="return isNumber(event)" />
+                            </div>
+                            <div class="col-sm-4">
+                                <label>
+                                    Term Loan
+                                </label>
+                                <input type="text" class="form-control" placeholder="Amount..." id="txtTermLoanLimit" onkeypress="return isNumber(event)" />
+                            </div>
+
+                            <div class="col-sm-4">
+                                <label>
+                                    [Spares & Machinery] 
+                                </label>
+                                <input type="text" class="form-control" placeholder="Amount..." id="txtSpareMachineryLoanLimit" onkeypress="return isNumber(event)" />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label>
+                                    SOD Limit
+                                </label>
+                                <input type="text" class="form-control" placeholder="Amount..." id="txtSOD" onkeypress="return isNumber(event)" />
+                            </div>
+                            <div class="col-sm-4">
+                                <label>
+                                   Sanc. Ref
+                                </label>
+                                <input type="text" class="form-control" placeholder="Amount..." id="txtSancRef" onkeypress="return isNumber(event)" />
+                            </div>
+                            
+
+                            <div class="col-sm-4">
+                                <label>
+                                    Expire Date
+                                </label>
+                                <input type="date" class="form-control" placeholder="Amount..." id="txtExpireDate" onkeypress="return isNumber(event)" />
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label>Attachment</label>
+                                <input id="fileInput" name="fileInput" class="form-control" type="file" multiple>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer" style="background-color:rgb(249, 250, 250)">
+                    <button type="button" ng-click="Clear()" class="btn btn-warning" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i> Close</button>
+                    <button ng-click="Save()" type="button" class="btn btn-primary"><i class="fas fa-check"></i> Submit</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="EexampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background-color:rgb(249, 250, 250);">
+                                        <h5 class="card-title" id="exampleModalLabel">Limit Facility (Edit)</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form class="needs-validation">
+                                            <div class="row">
+                                                <input type="hidden" id="eid" />
+                                                <div class="col-sm-6">
+                                                    <label>Unit Name:</label>
+                                                    <select class="form-select" ng-model="eleadunitid"
+                                                            id="eleadunitid">
+                                                        <option value="">--Select--</option>
+                                                        <option ng-repeat="list in unitlist" value="{{list.id}}">
+                                                            {{list.name}}
+                                                        </option>
+                                                    </select>
+                                                    <span class="error">Select Unit</span>
+                                                </div>
+
+                                                <div class="col-sm-6">
+                                                    <label>Inner Unit :</label>
+                                                    <select class="form-select" ng-model="einnerunitid"
+                                                            id="einnerunitid">
+                                                        <option value="">--Select--</option>
+                                                        <option ng-repeat="list in unitlist" value="{{list.id}}">
+                                                            {{list.name}}
+                                                        </option>
+                                                    </select>
+
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <label>Bank Name:</label>
+                                <select class="form-select" ng-model="ebankid" ng-init="GetBankInfoByUnit()"
+                                                            id="ebankid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in banklist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                    </select>
+                                                    <span class="error">Select Unit</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-sm-4">
+                                                    <label>
+                                                        SLC/ULC Limit<br />
+                                                        [Raw Materials]
+                                                    </label>
+                                <input type="text" class="form-control" placeholder="Amount..." id="etxtRawMaterialLimit" onkeypress="return isNumber(event)" />
+                                                    <span class="error">Start Date Required.</span>
+                                                </div>
+
+                                                <div class="col-sm-4">
+                                                    <label>
+                                                        LATR/Import<br />
+                                                        Loan Limit
+                                                    </label>
+                                <input type="text" class="form-control" placeholder="Amount..." id="etxtLoanLimit" onkeypress="return isNumber(event)" />
+                                                    <span class="error">End Date Required.</span>
+                                                </div>
+
+                                                <div class="col-sm-4">
+                                                    <label>
+                                                        SLC/ULC Limit<br />
+                                                        [Machinery]
+                                                    </label>
+                                <input type="text" class="form-control" placeholder="Amount..." id="etxtMachineryLimit" onkeypress="return isNumber(event)" />
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-sm-4">
+                                                    <label>
+                                                        Short Term
+                                                        Loan
+                                                    </label>
+                                <input type="text" class="form-control" placeholder="Amount..." id="etxtShortTermLoan" onkeypress="return isNumber(event)" />
+                                                    <span class="error">Amount Required.</span>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <label>
+                                                        Overdraft
+                                                        Facility
+                                                    </label>
+                                <input type="text" class="form-control" placeholder="Amount..." id="etxtOverDraftLimit" onkeypress="return isNumber(event)" />
+                                                    <span class="error">Interest Rate Required.</span>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <label>
+                                                        Bank
+                                                        Guarantee
+                                                    </label>
+                                <input type="text" class="form-control" placeholder="Amount..." id="etxtBankGuaranteeLimit" onkeypress="return isNumber(event)" />
+
+                                                    <span class="error">Interest Amount.</span>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="row">
+                                                <div class="col-sm-4">
+                                                    <label>
+                                                        Time Loan
+                                                        Limit
+                                                    </label>
+                                                    <input type="text" class="form-control" placeholder="Amount..." id="etxtTimeLoanLimit" onkeypress="return isNumber(event)" />
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <label>
+                                                        Term Loan
+                                                    </label>
+                                                    <input type="text" class="form-control" placeholder="Amount..." id="etxtTermLoanLimit" onkeypress="return isNumber(event)" />
+                                                </div>
+
+                                                <div class="col-sm-4">
+                                                    <label>
+                                                        [Spares & Machinery]
+                                                    </label>
+                                                    <input type="text" class="form-control" placeholder="Amount..." id="etxtSpareMachineryLoanLimit" onkeypress="return isNumber(event)" />
+                                                </div>
+                                            </div>
+
+
+                                             <div class="row">
+                                                  <div class="col-sm-4">
+                                                    <label>
+                                                        SOD Limit
+                                                    </label>
+                                                    <input type="text" class="form-control" placeholder="Amount..." id="etxtSOD" onkeypress="return isNumber(event)" />
+                                                </div>
+
+                                                <div class="col-sm-4">
+                                                    <label>
+                                                       Sanc. Ref
+                                                    </label>
+                                                    <input type="text" class="form-control" placeholder="Sanction Number..." id="etxtSancRef" />
+                                                </div>
+                                               
+                                                <div class="col-sm-4">
+                                                    <label>
+                                                        Expire Date
+                                                    </label>
+                                                    <input type="date" class="form-control" placeholder="Amount..." id="etxtExpireDate" onkeypress="return isNumber(event)" />
+                                                </div>
+                                            </div>
+
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer" style="background-color:rgb(249, 250, 250)">
+                                        <button type="button" ng-click="Clear()" class="btn btn-warning" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i> Close</button>
+                                        <button ng-click="Update()" type="button" class="btn btn-primary"><i class="fas fa-check"></i> Update</button>
+                                    </div>
+                                </div>
+                            </div>
+ </div>
+
+    <div id="ViewModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="ViewModalFullscreen" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Limit Facility (Attachment)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h5>Attachment</h5>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th style="width:80px;">Sl No</th>
+                                        <th style="width:400px;">File Name</th>
+                                        <th style="width:100px;">Action</th>
+                                    </tr>
+                                    <tbody id="tblData"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-warning sm" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="ViewModalFullscreenAttach" class="modal fade" tabindex="-1" aria-labelledby="ViewModalFullscreen" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Limit Facility (Attachment)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label>Attachment</label>
+                                <input id="fileInputDetails" name="fileInput" class="form-control" type="file" multiple>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h5>Attachment</h5>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th style="width:80px;">Sl No</th>
+                                        <th style="width:400px;">File Name</th>
+                                        <th style="width:100px;">Action</th>
+                                    </tr>
+                                    <tbody id="tblDataDoc"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                     
+          
+
+                        <div class="modal-footer">
+                            <button type="button" ng-click="Clear()" class="btn btn-warning" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i> Close</button>
+                            <button ng-click="Attach()" type="button" class="btn btn-primary"><i class="fas fa-check"></i> Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+</div>
+
+

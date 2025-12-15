@@ -1,0 +1,25 @@
+﻿
+<ul class="metismenu list-unstyled" id="side-menu" style="background-color:#f1f2f3">
+            @if (Model != null)
+            {
+                var submenu = (List<TREASURY.UI.Models.Menu.Menus>)Model;
+                var groupByMenu = submenu.GroupBy(x => new { x.SUBMENU, x.ICON }).ToList();
+
+                foreach (var MenuList in groupByMenu)
+                {
+                    <li>
+                <a href="javascript: void(0);" class="has-arrow">
+                    <i class="@MenuList.Key.ICON" style="color:rgb(252, 176, 64)"></i>
+                    <span class="menu-item" data-key="t-ui-elements"> @MenuList.Key.SUBMENU</span>
+                </a>
+                        <ul class="sub-menu" aria-expanded="false">
+                           @foreach (var SubMenuList in MenuList)
+                                  {
+                                    <li><a href='@Url.Action(@SubMenuList.VIEWNAME,@SubMenuList.CONTROLLERNAME)'>@SubMenuList.SUBMENUNAME</a></li> 
+                                  }
+                        </ul>
+                    </li>
+                }
+            }
+        </ul>
+       
