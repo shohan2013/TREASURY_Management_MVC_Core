@@ -1,6 +1,6 @@
 ﻿using TREASURY.UI.Models.LoanRelatedDoc;
 
-namespace TREASURY.UI.Service.TreasuryService.LoanRelatedDocService
+namespace TREASURY.UI.Service.LoanRelatedDocService
 {
     public interface ILoanRelatedDoc
     {
@@ -11,4 +11,3 @@ namespace TREASURY.UI.Service.TreasuryService.LoanRelatedDocService
         public Task<Tuple<string, string>> Delete(int id, int enroll);
     }
 }
-
