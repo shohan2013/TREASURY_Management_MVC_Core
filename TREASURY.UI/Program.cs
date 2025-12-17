@@ -21,6 +21,8 @@ using TREASURY.UI.Service.TreasuryService.BankLoanService;
 using TREASURY.UI.Repository.TreasuryRepository.BankLoanRepository;
 using TREASURY.UI.Service.TreasuryService.SettlementService;
 using TREASURY.UI.Repository.TreasuryRepository.SettlementRepository;
+using TREASURY.UI.Service.TreasuryService.LoanRelatedDocService;
+using TREASURY.UI.Repository.TreasuryRepository.LoanRelatedDocRepository;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,7 +44,7 @@ builder.Services.AddTransient<IInterestCalculationApproval, RInterestCalculation
 builder.Services.AddTransient<ILimitFacility, RLimitFacility>();
 builder.Services.AddTransient<IBankLoan, RBankLoan>();
 builder.Services.AddTransient<ISettlement, RSettlementRepository>();
-
+builder.Services.AddScoped<ILoanRelatedDoc, RLoanRelatedDocRepository>();
 
 builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 

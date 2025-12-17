@@ -9,6 +9,7 @@ using TREASURY.UI.Models.Treasury;
 using TREASURY.UI.Models.TreasuryReport;
 using TREASURY.UI.Models.LoanFacilityModel;
 using TREASURY.UI.Models.BankLoan;
+using TREASURY.UI.Models.LoanRelatedDoc;
 
 namespace TREASURY.UI
 {
@@ -35,6 +36,11 @@ namespace TREASURY.UI
         public DbSet<BankLoanViewModel> BankLoanViewModel { get; set; }
         public DbSet<BankLoanModel> BankLoanModel { get; set; }
         public DbSet<BankLoanSettlementViewModel> BankLoanSettlementViewModel { get; set; }
+
+        public DbSet<LoanRelatedDocView> LoanRelatedDocView { get; set; }
+        public DbSet<TBLLOANRELATEDDOC> TBLLOANRELATEDDOC { get; set; }
+        public DbSet<TBLBANKFORTREASURY> TBLBANKFORTREASURY { get; set; }
+        public DbSet<TBLUNITFORTREASURY> TBLUNITFORTREASURY { get; set; }
 
     }
 }
